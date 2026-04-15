@@ -55,33 +55,24 @@ const DERECHA = 0b0010;     // 2 en decimal - Bit 1
 const ABAJO = 0b0100;       // 4 en decimal - Bit 2
 const ARRIBA = 0b1000;      // 8 en decimal - Bit 3
 
+// Reemplaza tu función calcularCodigo por esta:
 function calcularCodigo(x, y) {
-    // Empezamos con el código 0000 (DENTRO)
     let codigo = DENTRO;
     
-    // Verificamos posición vertical (Y)
-    // Estudiante: Uso if-else porque un punto no puede estar ARRIBA y ABAJO al mismo tiempo
-    if (y > VIEWPORT.Ymax) {
-        // Activamos el bit de ARRIBA usando OR bit a bit (|)
-        // Ejemplo: 0000 | 1000 = 1000
-        codigo = codigo | ARRIBA;
-    } else if (y < VIEWPORT.Ymin) {
-        // Activamos el bit de ABAJO
-        // Ejemplo: 0000 | 0100 = 0100
-        codigo = codigo | ABAJO;
+    // Verificamos posición vertical (Y) - Ajustado para Canvas
+    if (y < VIEWPORT.Ymin) {
+        codigo |= ARRIBA; // Bit 3
+    } else if (y > VIEWPORT.Ymax) {
+        codigo |= ABAJO;  // Bit 2
     }
     
     // Verificamos posición horizontal (X)
-    // Puede estar a la DERECHA o a la IZQUIERDA
     if (x > VIEWPORT.Xmax) {
-        // Activamos el bit de DERECHA
-        codigo = codigo | DERECHA;
+        codigo |= DERECHA; // Bit 1
     } else if (x < VIEWPORT.Xmin) {
-        // Activamos el bit de IZQUIERDA
-        codigo = codigo | IZQUIERDA;
+        codigo |= IZQUIERDA; // Bit 0
     }
     
-    // Retornamos el código calculado
     return codigo;
 }
 
