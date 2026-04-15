@@ -55,7 +55,6 @@ const DERECHA = 0b0010;     // 2 en decimal - Bit 1
 const ABAJO = 0b0100;       // 4 en decimal - Bit 2
 const ARRIBA = 0b1000;      // 8 en decimal - Bit 3
 
-// Reemplaza tu función calcularCodigo por esta:
 function calcularCodigo(x, y) {
     let codigo = DENTRO;
     
@@ -90,56 +89,84 @@ function formatearBinario(codigo) {
 }
 
 console.log('✅ Función calcularCodigo() implementada');
-
+// Reemplaza o actualiza tu función analizarLinea por esta:
 function analizarLinea() {
-    // PASO 1: Calcular códigos de los dos extremos de la línea
-    const codigoP1 = calcularCodigo(p1.x, p1.y);
-    const codigoP2 = calcularCodigo(p2.x, p2.y);
+    let x1 = p1.x, y1 = p1.y;
+    let x2 = p2.x, y2 = p2.y;
     
-    // PASO 2: Operación OR bit a bit
-    // Estudiante: OR devuelve 1 si AL MENOS UNO de los bits es 1
-    // Si OR == 0000, significa que AMBOS códigos son 0000 (AMBOS DENTRO)
-    const resultadoOR = codigoP1 | codigoP2;
+    const codigoInicialP1 = calcularCodigo(x1, y1);
+    const codigoInicialP2 = calcularCodigo(x2, y2);
     
-    // PASO 3: Operación AND bit a bit
-    // Estudiante: AND devuelve 1 SOLO SI AMBOS bits son 1
-    // Si AND != 0000, significa que AMBOS puntos comparten al menos un bit '1'
-    // Geométricamente: AMBOS están fuera del MISMO lado
-    const resultadoAND = codigoP1 & codigoP2;
-    
-    // PASO 4: Determinar el estado según las reglas de Cohen-Sutherland
+    let aceptada = false;
+    let lineaRecortada = { x1, y1, x2, y2 };
+
+    while (true) {
+        let cod1 = calcularCodigo(x1, y1);
+        let cod2 = calcularCodigo(x2, y2);
+
+        if ((cod1 | cod2) === 0) {
+            aceptada = true; // Ambos dentro
+            break;
+        } else if ((cod1 & cod2) !== 0) {
+            aceptada = false; // Ambos fuera del mismo lado
+            break;
+        } else {
+            // Cruza: Elegir un punto afuera para recortar
+            let codFuera = cod1 !== 0 ? cod1 : cod2;
+            let x, y;
+
+            if (codFuera & ARRIBA) {
+                x = x1 + (x2 - x1) * (VIEWPORT.Ymin - y1) / (y2 - y1);
+                y = VIEWPORT.Ymin;
+            } else if (codFuera & ABAJO) {
+                x = x1 + (x2 - x1) * (VIEWPORT.Ymax - y1) / (y2 - y1);
+                y = VIEWPORT.Ymax;
+            } else if (codFuera & DERECHA) {
+                y = y1 + (y2 - y1) * (VIEWPORT.Xmax - x1) / (x2 - x1);
+                x = VIEWPORT.Xmax;
+            } else if (codFuera & IZQUIERDA) {
+                y = y1 + (y2 - y1) * (VIEWPORT.Xmin - x1) / (x2 - x1);
+                x = VIEWPORT.Xmin;
+            }
+
+            if (codFuera === cod1) {
+                x1 = x; y1 = y;
+            } else {
+                x2 = x; y2 = y;
+            }
+        }
+    }
+
+    lineaRecortada = { x1, y1, x2, y2 };
+
+    // Determinar colores y estado para el UI
     let estado = '';
-    let colorEstado = '';
-    
-    // REGLA 1: Aceptación Trivial
-    // Estudiante: Si OR == 0000, ambos códigos son 0000
-    if (resultadoOR === DENTRO) {
+    let color = '';
+    const resOR = codigoInicialP1 | codigoInicialP2;
+    const resAND = codigoInicialP1 & codigoInicialP2;
+
+    if (resOR === 0) {
         estado = '✅ DENTRO (Aceptación Trivial)';
-        colorEstado = '#2ecc71';  // Verde
-    }
-    // REGLA 2: Rechazo Trivial
-    // Estudiante: Si AND != 0000, comparten al menos un bit '1'
-    else if (resultadoAND !== DENTRO) {
+        color = '#2ecc71';
+    } else if (resAND !== 0) {
         estado = '❌ FUERA (Rechazo Trivial)';
-        colorEstado = '#e74c3c';  // Rojo
+        color = '#e74c3c';
+    } else {
+        estado = aceptada ? '✂️ RECORTADA (Intersección)' : '❌ FUERA (Tras recorte)';
+        color = '#3498db';
     }
-    // REGLA 3: La línea cruza la ventana (ni dentro ni completamente fuera del mismo lado)
-    else {
-        estado = '✂️ CRUZA (Requiere Recorte - Cálculo de intersección)';
-        colorEstado = '#3498db';  // Azul
-    }
-    
-    // Retornamos todos los datos para mostrarlos en pantalla
+
     return {
-        codigoP1: codigoP1,
-        codigoP2: codigoP2,
-        resultadoOR: resultadoOR,
-        resultadoAND: resultadoAND,
+        codigoP1: codigoInicialP1,
+        codigoP2: codigoInicialP2,
+        resultadoOR: resOR,
+        resultadoAND: resAND,
         estado: estado,
-        colorEstado: colorEstado
+        colorEstado: color,
+        aceptada: aceptada,
+        lineaFinal: lineaRecortada
     };
 }
-
 console.log('✅ Función analizarLinea() con OR y AND implementada');
 
 function dibujarViewport() {
