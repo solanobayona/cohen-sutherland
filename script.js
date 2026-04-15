@@ -328,24 +328,34 @@ function dibujarEtiquetasRegiones() {
  * Función principal de renderizado
  * Se llama cada vez que hay un cambio
  */
+// Asegúrate de que la función renderizar llame a todo en orden:
 function renderizar() {
-    // Limpiar el canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Dibujar el fondo negro
+    // Fondo negro
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Dibujar el viewport
     dibujarViewport();
+    dibujarEtiquetasRegiones(); // Opcional, para guía
     
-    // Analizar la línea actual (aquí ocurren las operaciones OR y AND)
     const analisis = analizarLinea();
-    
-    // Dibujar la línea y los puntos
     dibujarLineaYPuntos(analisis);
-    
-    // Actualizar el panel de información con los cálculos
     actualizarPanelInfo(analisis);
+}
+
+// Actualiza tu actualizarPanelInfo para manejar los decimales del recorte
+function actualizarPanelInfo(analisis) {
+    p1CoordsSpan.textContent = `(${Math.round(p1.x)}, ${Math.round(p1.y)})`;
+    p2CoordsSpan.textContent = `(${Math.round(p2.x)}, ${Math.round(p2.y)})`;
     
-    // Dibujar la cuadrícula de regiones (las
+    codigoP1Span.textContent = formatearBinario(analisis.codigoP1);
+    codigoP2Span.textContent = formatearBinario(analisis.codigoP2);
+    resultadoORSpan.textContent = formatearBinario(analisis.resultadoOR);
+    resultadoANDSpan.textContent = formatearBinario(analisis.resultadoAND);
+    
+    estadoTexto.textContent = analisis.estado;
+    estadoContainer.style.backgroundColor = analisis.colorEstado + '22';
+    estadoContainer.style.color = analisis.colorEstado;
+    estadoContainer.style.border = `2px solid ${analisis.colorEstado}`;
+}
