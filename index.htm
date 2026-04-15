@@ -3,262 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cohen-Sutherland | Ingreso de Coordenadas</title>
+    <title>Cohen-Sutherland | Multimedia UMNG</title>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            background-color: #1a1a2e;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            font-family: 'Courier New', Courier, monospace;
-            color: #eee;
+            margin: 0;
             padding: 20px;
         }
-        
-        h1 {
-            color: #4ecdc4;
-            margin-bottom: 10px;
-            font-size: 28px;
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
         }
-        
-        .subtitulo {
-            color: #f7fff7;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-        
-        /* Formularios de entrada */
-        .contenedor-formularios {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .formulario {
-            background-color: #16213e;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            min-width: 300px;
-        }
-        
-        .formulario h3 {
-            color: #4ecdc4;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 1px solid #2d2d44;
-            padding-bottom: 10px;
-        }
-        
-        .campo {
-            margin-bottom: 12px;
-        }
-        
-        .campo label {
-            display: inline-block;
-            width: 60px;
-            color: #a8dadc;
-        }
-        
-        .campo input {
-            width: 100px;
-            padding: 5px 8px;
-            background-color: #0f0f1a;
-            border: 1px solid #2d2d44;
-            color: #f1fa8c;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            border-radius: 4px;
-        }
-        
-        .coordenadas-linea {
+
+        h1 { color: #3498db; text-align: center; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #888; margin-bottom: 25px; }
+
+        .main-layout {
             display: flex;
             gap: 20px;
-            justify-content: space-around;
-        }
-        
-        .punto {
-            text-align: center;
-        }
-        
-        .punto h4 {
-            color: #e63946;
-            margin-bottom: 8px;
-        }
-        
-        .botones {
-            display: flex;
-            gap: 10px;
             justify-content: center;
-            margin-top: 15px;
+            flex-wrap: wrap;
         }
-        
-        .btn {
-            padding: 8px 16px;
-            background-color: #4ecdc4;
-            color: #1a1a2e;
+
+        /* El área del dibujo */
+        .canvas-container {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+
+        /* Panel de controles a la derecha */
+        .controls {
+            flex: 1;
+            min-width: 320px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-group {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        h3 { margin-top: 0; font-size: 0.9em; text-transform: uppercase; color: #3498db; }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-item { display: flex; flex-direction: column; gap: 5px; font-size: 0.8em; }
+
+        input {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input:focus { border-color: #3498db; }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
             border: none;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: 0.2s;
+            margin-bottom: 5px;
         }
-        
-        .btn:hover {
-            background-color: #6ee7df;
-            transform: scale(1.05);
+
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-secondary { background: #444; color: white; margin-top: 5px; }
+
+        /* Panel de resultados pro */
+        .info-panel {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #333;
         }
-        
-        .btn-secundario {
-            background-color: #457b9d;
-            color: white;
-        }
-        
-        .btn-secundario:hover {
-            background-color: #5a9ec9;
-        }
-        
-        .contenedor-canvas {
-            background-color: #0f0f1a;
+
+        .bits-display { font-family: 'Courier New', monospace; font-size: 0.9em; }
+        .bits-display b { color: #f1c40f; }
+
+        .status-box {
+            margin-top: 15px;
             padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-        
-        canvas {
-            display: block;
-            border: 2px solid #2d2d44;
-            cursor: crosshair;
-            background-color: #000000;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid #333;
         }
     </style>
 </head>
 <body>
-    <h1> Algoritmo Cohen-Sutherland</h1>
-    <div class="subtitulo">Operaciones OR y AND - Ingreso de Coordenadas</div>
-    
-    <!-- FORMULARIOS PARA INGRESO DE DATOS -->
-    <div class="contenedor-formularios">
-        <!-- Formulario del Viewport -->
-        <div class="formulario">
-            <h3> VIEWPORT</h3>
-            <div class="campo">
-                <label>Xmin:</label>
-                <input type="number" id="inputXmin" value="200" min="0" max="800">
-            </div>
-            <div class="campo">
-                <label>Xmax:</label>
-                <input type="number" id="inputXmax" value="600" min="0" max="800">
-            </div>
-            <div class="campo">
-                <label>Ymin:</label>
-                <input type="number" id="inputYmin" value="150" min="0" max="600">
-            </div>
-            <div class="campo">
-                <label>Ymax:</label>
-                <input type="number" id="inputYmax" value="450" min="0" max="600">
-            </div>
-            <div class="botones">
-                <button class="btn" id="btnActualizarViewport">Actualizar Viewport</button>
-            </div>
-        </div>
-        
-        <!-- Formulario de la Línea -->
-        <div class="formulario">
-            <h3> LÍNEA</h3>
-            <div class="coordenadas-linea">
-                <div class="punto">
-                    <h4>Punto 1 (P1)</h4>
-                    <div class="campo">
-                        <label>X1:</label>
-                        <input type="number" id="inputX1" value="100" min="0" max="800">
-                    </div>
-                    <div class="campo">
-                        <label>Y1:</label>
-                        <input type="number" id="inputY1" value="100" min="0" max="600">
-                    </div>
-                </div>
-                <div class="punto">
-                    <h4>Punto 2 (P2)</h4>
-                    <div class="campo">
-                        <label>X2:</label>
-                        <input type="number" id="inputX2" value="700" min="0" max="800">
-                    </div>
-                    <div class="campo">
-                        <label>Y2:</label>
-                        <input type="number" id="inputY2" value="500" min="0" max="600">
-                    </div>
-                </div>
-            </div>
-            <div class="botones">
-                <button class="btn" id="btnActualizarLinea">Actualizar Línea</button>
-                <button class="btn btn-secundario" id="btnResetear">Resetear</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="contenedor-canvas">
-        <canvas id="miCanvas" width="800" height="600"></canvas>
-    </div>
 
-    <!-- <script src="script.js"></script> -->
-    <!-- PANEL DE INFORMACIÓN DE CÁLCULOS -->
-    <div class="panel-info" style="margin-top: 20px; background-color: #16213e; padding: 20px 30px; border-radius: 8px; width: 800px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-        <div class="fila" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">📌 P1 (Fijo):</span>
-            <span class="valor" id="p1Coords" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px;">(100, 100)</span>
-        </div>
-        <div class="fila" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">🖱️ P2 (Móvil):</span>
-            <span class="valor" id="p2Coords" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px;">(700, 500)</span>
-        </div>
-        
-        <div class="fila" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">🔢 Código P1:</span>
-            <span class="valor valor-binario" id="codigoP1" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px; background-color: #0f0f1a; padding: 2px 10px; border-radius: 4px; letter-spacing: 2px;">0000</span>
-        </div>
-        <div class="fila" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">🔢 Código P2:</span>
-            <span class="valor valor-binario" id="codigoP2" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px; background-color: #0f0f1a; padding: 2px 10px; border-radius: 4px; letter-spacing: 2px;">0000</span>
-        </div>
-        
-        <div class="fila or-box" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44; color: #a8dadc;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">⚡ Operación OR (Aceptación?):</span>
-            <span class="valor valor-binario" id="resultadoOR" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px; background-color: #0f0f1a; padding: 2px 10px; border-radius: 4px; letter-spacing: 2px;">0000</span>
-        </div>
-        <div class="fila and-box" style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid #2d2d44; color: #e63946;">
-            <span class="etiqueta" style="color: #a8dadc; font-weight: bold;">💥 Operación AND (Rechazo?):</span>
-            <span class="valor valor-binario" id="resultadoAND" style="color: #f1fa8c; font-family: 'Courier New', monospace; font-size: 18px; background-color: #0f0f1a; padding: 2px 10px; border-radius: 4px; letter-spacing: 2px;">0000</span>
-        </div>
-        
-        <div class="estado-box" id="estadoContainer" style="text-align: center; margin-top: 15px; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; background-color: #1d3557;">
-            <span id="estadoTexto">✅ DENTRO (Aceptación Trivial)</span>
-        </div>
-        
-        <div class="leyenda-bits" style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; color: #6c757d; font-size: 13px;">
-            <div class="bit-item" style="display: flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; display: inline-block; margin-right: 5px; background: #4ecdc4;"></span> Bit 3: ARRIBA</div>
-            <div class="bit-item" style="display: flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; display: inline-block; margin-right: 5px; background: #ff6b6b;"></span> Bit 2: ABAJO</div>
-            <div class="bit-item" style="display: flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; display: inline-block; margin-right: 5px; background: #f9ca24;"></span> Bit 1: DERECHA</div>
-            <div class="bit-item" style="display: flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; display: inline-block; margin-right: 5px; background: #a29bfe;"></span> Bit 0: IZQUIERDA</div>
-        </div>
-        
-        <div class="instrucciones" style="margin-top: 15px; color: #888; font-size: 14px; text-align: center;">
-            💡 <strong>Arrastra P2</strong> con el mouse | <strong>Click en P1</strong> para moverlo<br>
-            🔍 O ingresa coordenadas manualmente en los formularios
+    <div class="container">
+        <h1>Simulador Cohen-Sutherland</h1>
+        <p class="subtitle">Algoritmos de Geometría Computacional - Ingeniería Multimedia</p>
+
+        <div class="main-layout">
+            <div class="canvas-container">
+                <canvas id="miCanvas" width="800" height="600"></canvas>
+            </div>
+
+            <div class="controls">
+                <section class="control-group">
+                    <h3>📐 Ventana de Recorte (Viewport)</h3>
+                    <div class="input-grid">
+                        <div class="input-item">X Mín <input type="number" id="inputXmin" value="200"></div>
+                        <div class="input-item">X Máx <input type="number" id="inputXmax" value="600"></div>
+                        <div class="input-item">Y Mín <input type="number" id="inputYmin" value="150"></div>
+                        <div class="input-item">Y Máx <input type="number" id="inputYmax" value="450"></div>
+                    </div>
+                    <button id="btnActualizarViewport" class="btn-primary">Actualizar Ventana</button>
+                </section>
+
+                <section class="control-group">
+                    <h3>📏 Coordenadas de la Línea</h3>
+                    <div class="input-grid">
+                        <div class="input-item">P1 X <input type="number" id="inputX1" value="100"></div>
+                        <div class="input-item">P1 Y <input type="number" id="inputY1" value="100"></div>
+                        <div class="input-item">P2 X <input type="number" id="inputX2" value="700"></div>
+                        <div class="input-item">P2 Y <input type="number" id="inputY2" value="500"></div>
+                    </div>
+                    <button id="btnActualizarLinea" class="btn-primary">Actualizar Línea</button>
+                    <button id="btnResetear" class="btn-secondary">Resetear Vista</button>
+                </section>
+
+                <section id="estadoContainer" class="info-panel">
+                    <h3>📊 Análisis de Bits</h3>
+                    <div class="bits-display">
+                        <p>P1: <span id="p1Coords"></span> | Binario: <b id="codigoP1">0000</b></p>
+                        <p>P2: <span id="p2Coords"></span> | Binario: <b id="codigoP2">0000</b></p>
+                        <hr style="border: 0.5px solid #333;">
+                        <p>OR (Suma bits): <b id="resultadoOR">0000</b></p>
+                        <p>AND (Intersección): <b id="resultadoAND">0000</b></p>
+                    </div>
+                    <div class="status-box">
+                        <span id="estadoTexto">LISTO</span>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const canvas = document.getElementById('miCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Variables de estado
+        let VIEWPORT = { Xmin: 200, Xmax: 600, Ymin: 150, Ymax: 450 };
+        let p1 = { x: 100, y: 100 };
+        let p2 = { x: 700, y: 500 };
+        let puntoArrastrando = null;
+
+        // Bits de Cohen-Sutherland
+        const DENTRO = 0, IZQUIERDA = 1, DERECHA = 2, ABAJO = 4, ARRIBA = 8;
+
+        function calcularCodigo(x, y) {
+            let codigo = DENTRO;
+            if (x < VIEWPORT.Xmin) codigo |= IZQUIERDA;
+            else if (x > VIEWPORT.Xmax) codigo |= DERECHA;
+            if (y < VIEWPORT.Ymin) codigo |= ARRIBA;
+            else if (y > VIEWPORT.Ymax) codigo |= ABAJO;
+            return codigo;
+        }
+
+        function analizarLinea() {
+            let x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
+            const cIni1 = calcularCodigo(x1, y1), cIni2 = calcularCodigo(x2, y2);
+            let aceptada = false;
+
+            while (true) {
+                let c1 = calcularCodigo(x1, y1), c2 = calcularCodigo(x2, y2);
+                if ((c1 | c2) === 0) { aceptada = true; break; }
+                else if ((c1 & c2) !== 0) { aceptada = false; break; }
+                else {
+                    let cOut = c1 !== 0 ? c1 : c2;
+                    let x, y;
+                    if (cOut & ARRIBA) { x = x1 + (x2-x1)*(VIEWPORT.Ymin-y1)/(y2-y1); y = VIEWPORT.Ymin; }
+                    else if (cOut & ABAJO) { x = x1 + (x2-x1)*(VIEWPORT.Ymax-y1)/(y2-y1); y = VIEWPORT.Ymax; }
+                    else if (cOut & DERECHA) { y = y1 + (y2-y1)*(VIEWPORT.Xmax-x1)/(x2-x1); x = VIEWPORT.Xmax; }
+                    else if (cOut & IZQUIERDA) { y = y1 + (y2-y1)*(VIEWPORT.Xmin-x1)/(x2-x1); x = VIEWPORT.Xmin; }
+                    if (cOut === c1) { x1 = x; y1 = y; } else { x2 = x; y2 = y; }
+                }
+            }
+            return { c1: cIni1, c2: cIni2, aceptada, x1, y1, x2, y2 };
+        }
+
+        function renderizar() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Viewport
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+            ctx.fillRect(VIEWPORT.Xmin, VIEWPORT.Ymin, VIEWPORT.Xmax-VIEWPORT.Xmin, VIEWPORT.Ymax-VIEWPORT.Ymin);
+            ctx.strokeStyle = '#444'; ctx.setLineDash([5,5]);
+            ctx.strokeRect(VIEWPORT.Xmin, VIEWPORT.Ymin, VIEWPORT.Xmax-VIEWPORT.Xmin, VIEWPORT.Ymax-VIEWPORT.Ymin);
+            ctx.setLineDash([]);
+
+            const res = analizarLinea();
+
+            // Línea original
+            ctx.strokeStyle = '#222'; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+
+            // Línea recortada
+            if (res.aceptada) {
+                ctx.strokeStyle = '#3498db'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(res.x1, res.y1); ctx.lineTo(res.x2, res.y2); ctx.stroke();
+                ctx.lineWidth = 1;
+            }
+
+            // Puntos de control
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(p1.x, p1.y, 7, 0, 7); ctx.fill();
+            ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.arc(p2.x, p2.y, 7, 0, 7); ctx.fill();
+
+            // Actualizar textos
+            document.getElementById('p1Coords').textContent = `(${Math.round(p1.x)},${Math.round(p1.y)})`;
+            document.getElementById('p2Coords').textContent = `(${Math.round(p2.x)},${Math.round(p2.y)})`;
+            document.getElementById('codigoP1').textContent = res.c1.toString(2).padStart(4,'0');
+            document.getElementById('codigoP2').textContent = res.c2.toString(2).padStart(4,'0');
+            document.getElementById('resultadoOR').textContent = (res.c1|res.c2).toString(2).padStart(4,'0');
+            document.getElementById('resultadoAND').textContent = (res.c1&res.c2).toString(2).padStart(4,'0');
+            
+            const est = document.getElementById('estadoTexto');
+            if ((res.c1|res.c2) === 0) { est.textContent = "✅ TOTALMENTE DENTRO"; est.parentElement.style.color = "#2ecc71"; }
+            else if ((res.c1&res.c2) !== 0) { est.textContent = "❌ TOTALMENTE FUERA"; est.parentElement.style.color = "#e74c3c"; }
+            else { est.textContent = res.aceptada ? "✂️ LÍNEA RECORTADA" : "❌ FUERA TRAS RECORTE"; est.parentElement.style.color = "#3498db"; }
+        }
+
+        // Mouse Interacción
+        canvas.onmousedown = (e) => {
+            const r = canvas.getBoundingClientRect();
+            const mx = e.clientX - r.left, my = e.clientY - r.top;
+            if (Math.hypot(mx-p1.x, my-p1.y) < 20) puntoArrastrando = 'p1';
+            else if (Math.hypot(mx-p2.x, my-p2.y) < 20) puntoArrastrando = 'p2';
+        };
+        window.onmousemove = (e) => {
+            if (!puntoArrastrando) return;
+            const r = canvas.getBoundingClientRect();
+            if (puntoArrastrando === 'p1') { p1.x = e.clientX-r.left; p1.y = e.clientY-r.top; }
+            else { p2.x = e.clientX-r.left; p2.y = e.clientY-r.top; }
+            renderizar();
+        };
+        window.onmouseup = () => puntoArrastrando = null;
+
+        // Botones
+        document.getElementById('btnActualizarViewport').onclick = () => {
+            VIEWPORT = { Xmin: +document.getElementById('inputXmin').value, Xmax: +document.getElementById('inputXmax').value, 
+                         Ymin: +document.getElementById('inputYmin').value, Ymax: +document.getElementById('inputYmax').value };
+            renderizar();
+        };
+        document.getElementById('btnActualizarLinea').onclick = () => {
+            p1 = { x: +document.getElementById('inputX1').value, y: +document.getElementById('inputY1').value };
+            p2 = { x: +document.getElementById('inputX2').value, y: +document.getElementById('inputY2').value };
+            renderizar();
+        };
+        document.getElementById('btnResetear').onclick = () => location.reload();
+
+        renderizar();
+    </script>
 </body>
 </html>
