@@ -236,38 +236,32 @@ function dibujarViewport() {
  * @param {Object} analisis - Resultado de la función analizarLinea()
  */
 function dibujarLineaYPuntos(analisis) {
-    // Dibujar la línea con el color según su estado
+    // 1. Dibujar línea original en gris oscuro (para ver el recorte)
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
     ctx.lineTo(p2.x, p2.y);
-    ctx.strokeStyle = analisis.colorEstado;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    
-    // Dibujar P1 (punto fijo) - Círculo blanco
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(p1.x, p1.y, 6, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.strokeStyle = '#000000';
+    ctx.strokeStyle = '#333'; 
     ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
     ctx.stroke();
-    
-    // Dibujar P2 (punto móvil) - Círculo azul
-    ctx.fillStyle = '#3498db';
-    ctx.beginPath();
-    ctx.arc(p2.x, p2.y, 6, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    
-    // Etiquetas P1 y P2
-    ctx.font = 'bold 14px Courier New';
+    ctx.setLineDash([]);
+
+    // 2. Dibujar la parte que queda DENTRO tras el recorte
+    if (analisis.aceptada) {
+        ctx.beginPath();
+        ctx.moveTo(analisis.lineaFinal.x1, analisis.lineaFinal.y1);
+        ctx.lineTo(analisis.lineaFinal.x2, analisis.lineaFinal.y2);
+        ctx.strokeStyle = analisis.colorEstado;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+
+    // 3. Dibujar puntos de control (P1 blanco, P2 azul)
     ctx.fillStyle = '#ffffff';
-    ctx.fillText('P1', p1.x + 10, p1.y - 10);
+    ctx.beginPath(); ctx.arc(p1.x, p1.y, 6, 0, 2 * Math.PI); ctx.fill();
+    
     ctx.fillStyle = '#3498db';
-    ctx.fillText('P2', p2.x + 10, p2.y - 10);
+    ctx.beginPath(); ctx.arc(p2.x, p2.y, 6, 0, 2 * Math.PI); ctx.fill();
 }
 
 function actualizarPanelInfo(analisis) {
